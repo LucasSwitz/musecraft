@@ -1,0 +1,7 @@
+{
+  "schemaVersion": 1, "id": "musecraft", "version": "${version}",
+  "name": "Musecraft Client Controller", "environment": "client",
+  "entrypoints": { "client": ["ai.musecraft.MusecraftClient"] },
+  "mixins": ["musecraft.mixins.json"],
+  "depends": { "fabricloader": ">=${fabricLoader}", "minecraft": "${minecraft}", "java": ">=${java}", "baritone": "1.11.3" }
+}

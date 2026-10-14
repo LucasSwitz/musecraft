@@ -1,0 +1,13 @@
+#!/bin/sh
+set -eu
+musecraft_home="${MUSECRAFT_HOME:-/home/hatch/workspace/musecraft}"
+node_bin="${MUSECRAFT_NODE:-$musecraft_home/toolchain/node/bin/node}"
+script_dir=$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd)
+export MUSECRAFT_HOME="$musecraft_home"
+python_bin=python3
+if [ -x "$musecraft_home/venv/bin/python" ]; then python_bin="$musecraft_home/venv/bin/python"; fi
+if [ "${1:-}" = start ]; then
+  exec "$python_bin" "$script_dir/start.py"
+fi
+"$python_bin" "$script_dir/start.py" --quiet
+exec "$node_bin" "$script_dir/musecraft.cjs" "$@"

@@ -1,0 +1,51 @@
+import groovy.json.JsonSlurper
+plugins { id 'fabric-loom' version '1.9.2' }
+def release = new JsonSlurper().parse(file('../release.json'))
+version = release.version
+group = 'ai.musecraft'
+base { archivesName = 'musecraft-client' }
+repositories { mavenCentral(); flatDir { dirs 'libs' } }
+def baritone = file('libs/baritone-unoptimized-fabric-1.11.3.jar')
+def baritoneSha = java.security.MessageDigest.getInstance('SHA-256').digest(baritone.bytes).encodeHex().toString()
+if (baritoneSha != '02239bff27955bd842c2e132c2860689bc1190f2ca37b7f379213d8874d75903') {
+    throw new GradleException('Baritone release checksum mismatch')
+}
+dependencies {
+    minecraft "com.mojang:minecraft:${release.minecraft}"
+    mappings "net.fabricmc:yarn:${release.minecraft}+build.3:v2"
+    modImplementation "net.fabricmc:fabric-loader:${release.fabricLoader}"
+    include modImplementation('cabaletta:baritone-unoptimized-fabric:1.11.3')
+    testImplementation "net.fabricmc:fabric-loader-junit:${release.fabricLoader}"
+}
+java { toolchain.languageVersion = JavaLanguageVersion.of(release.java as int) }
+tasks.withType(JavaCompile).configureEach { options.release = release.java as int }
+def generated = layout.buildDirectory.dir('generated/sources/release')
+tasks.register('generateRelease') {
+    inputs.file('../release.json')
+    outputs.dir(generated)
+    doLast {
+        def target = generated.get().file('ai/musecraft/Release.java').asFile
+        target.parentFile.mkdirs()
+        target.text = """package ai.musecraft;
+final class Release {
+    static final String VERSION = "${release.version}";
+    static final int PROTOCOL = ${release.protocol};
+    static final String MINECRAFT = "${release.minecraft}";
+    static final String FABRIC = "${release.fabricLoader}";
+}
+"""
+    }
+}
+sourceSets.main.java.srcDir(generated)
+compileJava.dependsOn('generateRelease')
+processResources {
+    inputs.file('../release.json')
+    filesMatching('fabric.mod.json') { expand(release) }
+    from('libs/BARITONE-LICENSE')
+    from('libs/README.md') { rename { 'BARITONE-NOTICE.md' } }
+}
+tasks.withType(AbstractArchiveTask).configureEach {
+    preserveFileTimestamps = false
+    reproducibleFileOrder = true
+}
+test { useJUnitPlatform() }

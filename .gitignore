@@ -1,0 +1,12 @@
+/dist/
+/.local/
+**/.gradle/
+**/build/
+**/__pycache__/
+*.pyc
+.DS_Store
+/skill/release.json
+/skill/manifest.json
+/skill/assets/
+
+/mod/logs/

@@ -1,0 +1,11 @@
+{
+  "version": "0.8.0-rc.109",
+  "protocol": 1,
+  "minecraft": "1.21.1",
+  "fabricLoader": "0.16.14",
+  "java": 21,
+  "nodeMajor": 25,
+  "platforms": [
+    "linux-x86_64"
+  ]
+}

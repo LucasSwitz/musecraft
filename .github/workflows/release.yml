@@ -1,0 +1,52 @@
+name: Validate and package
+on:
+  push:
+    branches: ['**']
+    tags: ['v*']
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '25'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python3 scripts/check.py
+      - run: for t in tests/*.cjs; do node "$t"; done
+      - run: python3 scripts/release.py
+      - run: python3 tests/release_contract.py dist/*.tar.gz
+      - uses: actions/upload-artifact@v4
+        with:
+          name: musecraft-release
+          path: dist/*
+  draft-release:
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: package
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: musecraft-release
+          path: dist
+      - name: Check tag matches release
+        run: python3 -c 'import json,os; assert os.environ["GITHUB_REF_NAME"] == "v" + json.load(open("release.json"))["version"]'
+      - run: gh release create "$GITHUB_REF_NAME" dist/* --draft --title "Musecraft $GITHUB_REF_NAME" --notes "Build validated. Review live E2E evidence before publication."
+        env:
+          GH_TOKEN: ${{ github.token }}

@@ -1,0 +1,55 @@
+{
+  "name": "Jolly",
+  "description": "The default Muse avatar",
+  "authors": [
+    "Muse"
+  ],
+  "color": "dbcbb1",
+  "customizations": {
+    "model.Body.blob": {
+      "smooth": true
+    },
+    "model.Body.Face.face": {
+      "smooth": true
+    },
+    "model.RightArm.arm": {
+      "smooth": true
+    },
+    "model.LeftArm.arm": {
+      "smooth": true
+    },
+    "model.RightLeg.leg": {
+      "smooth": true
+    },
+    "model.LeftLeg.leg": {
+      "smooth": true
+    },
+    "model.Body.Face.helmet": {
+      "smooth": true
+    },
+    "model.Body.chestplate": {
+      "smooth": true
+    },
+    "model.Body.belt": {
+      "smooth": true
+    },
+    "model.RightArm.shoulder": {
+      "smooth": true
+    },
+    "model.LeftArm.shoulder": {
+      "smooth": true
+    },
+    "model.RightLeg.legging": {
+      "smooth": true
+    },
+    "model.LeftLeg.legging": {
+      "smooth": true
+    },
+    "model.RightLeg.boot": {
+      "smooth": true
+    },
+    "model.LeftLeg.boot": {
+      "smooth": true
+    }
+  }
+}
